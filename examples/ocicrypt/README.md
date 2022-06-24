@@ -29,7 +29,7 @@ ocicrypt-0.0.1.tar.encrypted
 
 - just support OCI format image;
 
-- encrypted tarball extension name， `encrypted`
+- encrypted tarball extension name，`encrypted`
 
 ```xml
 <plugin>
@@ -64,9 +64,9 @@ ocicrypt-0.0.1.tar.encrypted
 
 we are add two element to do this.
 
-- **<key>**, publickey path
+- **&lt;key&gt;**, publickey path
 
-- **<wrap>**, wrap method, include: JWE/PKCS11/PKCS7, just support JWE now.
+- **&lt;wrap&gt;**, wrap method, include: JWE/PKCS11/PKCS7, **just support JWE now**.
 
 ## More information
 
