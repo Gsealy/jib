@@ -21,12 +21,15 @@ import com.google.cloud.tools.jib.builder.ProgressEventDispatcher;
 import com.google.cloud.tools.jib.configuration.BuildContext;
 import com.google.cloud.tools.jib.image.Image;
 import com.google.cloud.tools.jib.image.ImageTarball;
+import com.google.cloud.tools.jib.image.enc.EncImageTarball;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.concurrent.Callable;
+import javax.annotation.Nullable;
 
 public class WriteTarFileStep implements Callable<BuildResult> {
 
@@ -35,6 +38,8 @@ public class WriteTarFileStep implements Callable<BuildResult> {
 
   private final Path outputPath;
   private final Image builtImage;
+  @Nullable private Path keyPath;
+  private String wrapType = "JWE";
 
   WriteTarFileStep(
       BuildContext buildContext,
@@ -45,6 +50,14 @@ public class WriteTarFileStep implements Callable<BuildResult> {
     this.progressEventDispatcherFactory = progressEventDispatcherFactory;
     this.outputPath = outputPath;
     this.builtImage = builtImage;
+  }
+
+  public void setWrapType(String wrapType) {
+    this.wrapType = wrapType;
+  }
+
+  public void setKeyPath(Path keyPath) {
+    this.keyPath = keyPath;
   }
 
   @Override
@@ -65,7 +78,19 @@ public class WriteTarFileStep implements Callable<BuildResult> {
                 buildContext.getAllTargetImageTags())
             .writeTo(outputStream);
       }
-
+      if (keyPath != null) {
+        final String encPath = outputPath.toString() + ".encrypted";
+        try (OutputStream outputStream =
+            new BufferedOutputStream(Files.newOutputStream(Paths.get(encPath)))) {
+          new EncImageTarball(
+                  builtImage,
+                  buildContext.getTargetImageConfiguration().getImage(),
+                  buildContext.getAllTargetImageTags(),
+                  keyPath,
+                  wrapType)
+              .writeTo(outputStream);
+        }
+      }
       return BuildResult.fromImage(builtImage, buildContext.getTargetFormat());
     }
   }

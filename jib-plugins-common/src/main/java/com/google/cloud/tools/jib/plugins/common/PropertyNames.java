@@ -58,6 +58,8 @@ public class PropertyNames {
   public static final String OUTPUT_PATHS_IMAGE_JSON = "jib.outputPaths.imageJson";
   public static final String OUTPUT_PATHS_TAR = "jib.outputPaths.tar";
   public static final String CONTAINERIZING_MODE = "jib.containerizingMode";
+  public static final String OUTPUT_PATHS_KEY = "jib.outputPaths.key";
+  public static final String OUTPUT_PATHS_WRAP = "jib.outputPaths.wrap";
   public static final String CONFIGURATION_NAME = "jib.configurationName";
   public static final String SKIP = "jib.skip";
 

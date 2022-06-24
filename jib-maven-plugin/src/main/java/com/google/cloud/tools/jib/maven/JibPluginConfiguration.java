@@ -42,7 +42,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
-import javax.inject.Inject;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -321,6 +320,8 @@ public abstract class JibPluginConfiguration extends AbstractMojo {
   public static class OutputPathsParameters {
 
     @Nullable @Parameter private File tar;
+    @Nullable @Parameter private File key;
+    @Parameter private String wrap = "JWE";
     @Nullable @Parameter private File digest;
     @Nullable @Parameter private File imageId;
     @Nullable @Parameter private File imageJson;
@@ -380,7 +381,7 @@ public abstract class JibPluginConfiguration extends AbstractMojo {
   private boolean skip;
 
   @Parameter private List<ExtensionParameters> pluginExtensions = Collections.emptyList();
-  @Inject private Set<JibMavenPluginExtension<?>> injectedPluginExtensions = Collections.emptySet();
+  private Set<JibMavenPluginExtension<?>> injectedPluginExtensions = Collections.emptySet();
 
   protected Set<JibMavenPluginExtension<?>> getInjectedPluginExtensions() {
     return injectedPluginExtensions;
@@ -805,6 +806,18 @@ public abstract class JibPluginConfiguration extends AbstractMojo {
   public String getContainerizingMode() {
     String property = getProperty(PropertyNames.CONTAINERIZING_MODE);
     return property != null ? property : containerizingMode;
+  }
+
+  Path getKeyPath() {
+    return outputPaths.key == null ? Paths.get("") : outputPaths.key.toPath();
+  }
+
+  String getWrapType() {
+    String property = getProperty(PropertyNames.OUTPUT_PATHS_WRAP);
+    if (property != null) {
+      return property;
+    }
+    return outputPaths.wrap;
   }
 
   boolean isSkipped() {

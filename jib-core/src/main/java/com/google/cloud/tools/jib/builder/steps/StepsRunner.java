@@ -176,6 +176,49 @@ public class StepsRunner {
   }
 
   /**
+   * build encrypt tar
+   *
+   * @param outputPath the target file path to write the image to
+   * @return this
+   */
+  public StepsRunner encryptTarBuildSteps(Path outputPath, Path keyPath, String wrapType) {
+    rootProgressDescription = "building image & encrypt to tar file";
+
+    addRetrievalSteps(true); // always pull layers for tar builds
+    stepsToRun.add(this::buildAndCacheApplicationLayers);
+    stepsToRun.add(this::buildImages);
+
+    // create a tar
+    stepsToRun.add(
+        progressDispatcherFactory ->
+            writeEncTarFile(outputPath, keyPath, wrapType, progressDispatcherFactory));
+    return this;
+  }
+
+  private void writeEncTarFile(
+      Path outputPath,
+      Path keyPath,
+      String wrapType,
+      ProgressEventDispatcher.Factory progressDispatcherFactory) {
+    results.buildResult =
+        executorService.submit(
+            () -> {
+              Verify.verify(
+                  results.baseImagesAndBuiltImages.get().size() == 1,
+                  "multi-platform image building not supported when building a local tar image");
+              Image builtImage =
+                  results.baseImagesAndBuiltImages.get().values().iterator().next().get();
+
+              final WriteTarFileStep writeTarFileStep =
+                  new WriteTarFileStep(
+                      buildContext, progressDispatcherFactory, outputPath, builtImage);
+              writeTarFileStep.setKeyPath(keyPath);
+              writeTarFileStep.setWrapType(wrapType);
+              return writeTarFileStep.call();
+            });
+  }
+
+  /**
    * Add steps for pushing images to a remote registry. The registry is determined by the image
    * name.
    *

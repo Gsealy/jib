@@ -63,6 +63,9 @@ public class JibBuildRunner {
   private static final String SUCCESS_MESSAGE_FORMAT_FOR_TARBALL =
       "Built image tarball at \u001B[36m%s\u001B[0m";
 
+  private static final String SUCCESS_MESSAGE_FORMAT_FOR_ENCRYPTED_TARBALL =
+      "Built plain/encrypted image tarball at \u001B[36m%s(.encrypted)\u001B[0m";
+
   private static CharSequence colorCyan(CharSequence innerText) {
     return new StringBuilder().append("\u001B[36m").append(innerText).append("\u001B[0m");
   }
@@ -149,6 +152,7 @@ public class JibBuildRunner {
    * @param logger consumer for handling log events
    * @param helpfulSuggestions suggestions to use in help messages for exceptions
    * @param outputPath the path to output the tarball to
+   * @param encrypted also output encrypted tarball
    * @return a {@link JibBuildRunner} for building a tarball
    */
   public static JibBuildRunner forBuildTar(
@@ -156,14 +160,22 @@ public class JibBuildRunner {
       Containerizer containerizer,
       Consumer<LogEvent> logger,
       HelpfulSuggestions helpfulSuggestions,
-      Path outputPath) {
+      Path outputPath,
+      boolean encrypted) {
+    String successMsg;
+    if (encrypted) {
+      successMsg =
+          String.format(SUCCESS_MESSAGE_FORMAT_FOR_ENCRYPTED_TARBALL, outputPath.toString());
+    } else {
+      successMsg = String.format(SUCCESS_MESSAGE_FORMAT_FOR_TARBALL, outputPath.toString());
+    }
     return new JibBuildRunner(
         jibContainerBuilder,
         containerizer,
         logger,
         helpfulSuggestions,
         String.format(STARTUP_MESSAGE_FORMAT_FOR_TARBALL, outputPath.toString()),
-        String.format(SUCCESS_MESSAGE_FORMAT_FOR_TARBALL, outputPath.toString()));
+        successMsg);
   }
 
   private static void handleRegistryUnauthorizedException(

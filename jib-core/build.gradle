@@ -17,6 +17,9 @@ dependencies {
   implementation dependencyStrings.JACKSON_DATATYPE_JSR310
   implementation dependencyStrings.ASM
 
+  implementation 'org.bouncycastle:bcpkix-jdk15on:1.70'
+  implementation 'org.apache.cxf:cxf-rt-rs-security-jose:3.5.2'
+
   testImplementation dependencyStrings.JUNIT
   testImplementation dependencyStrings.TRUTH
   testImplementation dependencyStrings.TRUTH8

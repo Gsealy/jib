@@ -193,6 +193,16 @@ public class GradleRawConfiguration implements RawConfiguration {
   }
 
   @Override
+  public Path getKeyPath() {
+    return Paths.get("");
+  }
+
+  @Override
+  public String getWrapType() {
+    return "JWE";
+  }
+
+  @Override
   public Path getTarOutputPath() {
     return jibExtension.getOutputPaths().getTarPath();
   }

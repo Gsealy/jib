@@ -55,7 +55,7 @@ import javax.annotation.Nullable;
  * @see <a href="https://github.com/opencontainers/image-spec/blob/master/manifest.md">OCI Image
  *     Manifest Specification</a>
  */
-public class OciManifestTemplate implements BuildableManifestTemplate {
+public class EncOciManifestTemplate implements BuildableManifestTemplate {
 
   /** The OCI manifest media type. */
   public static final String MANIFEST_MEDIA_TYPE = "application/vnd.oci.image.manifest.v1+json";
@@ -65,12 +65,10 @@ public class OciManifestTemplate implements BuildableManifestTemplate {
       "application/vnd.oci.image.config.v1+json";
 
   /** The OCI layer media type. */
-  private static final String LAYER_MEDIA_TYPE = "application/vnd.oci.image.layer.v1.tar+gzip";
+  private static final String LAYER_MEDIA_TYPE =
+      "application/vnd.oci.image.layer.v1.tar+gzip+encrypted";
 
   private final int schemaVersion = 2;
-
-  @SuppressWarnings("unused")
-  private final String mediaType = MANIFEST_MEDIA_TYPE;
 
   /** The container configuration reference. */
   @Nullable private ContentDescriptorTemplate config;
@@ -104,9 +102,21 @@ public class OciManifestTemplate implements BuildableManifestTemplate {
     config = new ContentDescriptorTemplate(CONTAINER_CONFIGURATION_MEDIA_TYPE, size, digest);
   }
 
+  /**
+   * add the origin gzip digest and size, but annotation is new
+   *
+   * @param size the size of the layer.
+   * @param digest the layer descriptor digest.
+   * @param annotations the layer annotations
+   */
   @Override
   public void addLayer(
       long size, DescriptorDigest digest, @Nullable Map<String, String> annotations) {
-    layers.add(new ContentDescriptorTemplate(LAYER_MEDIA_TYPE, size, digest));
+    ContentDescriptorTemplate descriptorTemplate =
+        new ContentDescriptorTemplate(LAYER_MEDIA_TYPE, size, digest);
+    if (annotations != null) {
+      descriptorTemplate.setAnnotations(annotations);
+    }
+    layers.add(descriptorTemplate);
   }
 }

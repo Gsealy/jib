@@ -191,6 +191,16 @@ public class MavenRawConfiguration implements RawConfiguration {
   }
 
   @Override
+  public Path getKeyPath() {
+    return jibPluginConfiguration.getKeyPath();
+  }
+
+  @Override
+  public String getWrapType() {
+    return jibPluginConfiguration.getWrapType();
+  }
+
+  @Override
   public Path getTarOutputPath() {
     return jibPluginConfiguration.getTarOutputPath();
   }

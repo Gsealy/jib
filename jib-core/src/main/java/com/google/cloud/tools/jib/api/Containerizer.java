@@ -62,6 +62,7 @@ public class Containerizer {
   private static final String DESCRIPTION_FOR_DOCKER_REGISTRY = "Building and pushing image";
   private static final String DESCRIPTION_FOR_DOCKER_DAEMON = "Building image to Docker daemon";
   private static final String DESCRIPTION_FOR_TARBALL = "Building image tarball";
+  private static final String DESCRIPTION_FOR_ENC_TARBALL = "Building enc image tarball";
 
   /**
    * Gets a new {@link Containerizer} that containerizes to a container registry.
@@ -125,6 +126,32 @@ public class Containerizer {
 
     return new Containerizer(
         DESCRIPTION_FOR_TARBALL, imageConfiguration, stepsRunnerFactory, false);
+  }
+
+  /**
+   * Gets a new {@link Containerizer} that containerizes to a tarball archive.
+   *
+   * @param tarImage the {@link EncTarImage} that defines target output file
+   * @return a new {@link Containerizer}
+   */
+  public static Containerizer to(EncTarImage tarImage) {
+    if (!tarImage.getImageReference().isPresent()) {
+      throw new IllegalArgumentException(
+          "Image name must be set when building a TarImage; use TarImage#named(...) to set the name"
+              + " of the target image");
+    }
+
+    ImageConfiguration imageConfiguration =
+        ImageConfiguration.builder(tarImage.getImageReference().get()).build();
+
+    Function<BuildContext, StepsRunner> stepsRunnerFactory =
+        buildContext ->
+            StepsRunner.begin(buildContext)
+                .encryptTarBuildSteps(
+                    tarImage.getTarPath(), tarImage.getKeyPath(), tarImage.getWrapType());
+
+    return new Containerizer(
+        DESCRIPTION_FOR_ENC_TARBALL, imageConfiguration, stepsRunnerFactory, false);
   }
 
   private final String description;

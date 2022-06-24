@@ -49,7 +49,8 @@ public class OciManifestTemplateTest {
     manifestJson.addLayer(
         1000_000,
         DescriptorDigest.fromHash(
-            "4945ba5011739b0b98c4a41afe224e417f47c7c99b2ce76830999c9a0861b236"));
+            "4945ba5011739b0b98c4a41afe224e417f47c7c99b2ce76830999c9a0861b236"),
+        null);
 
     // Serializes the JSON object.
     Assert.assertEquals(expectedJson, JsonTemplateMapper.toUtf8String(manifestJson));

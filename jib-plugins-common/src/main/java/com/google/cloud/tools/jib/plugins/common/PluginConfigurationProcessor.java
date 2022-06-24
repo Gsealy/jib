@@ -19,6 +19,7 @@ package com.google.cloud.tools.jib.plugins.common;
 import com.google.cloud.tools.jib.api.Containerizer;
 import com.google.cloud.tools.jib.api.Credential;
 import com.google.cloud.tools.jib.api.DockerDaemonImage;
+import com.google.cloud.tools.jib.api.EncTarImage;
 import com.google.cloud.tools.jib.api.ImageReference;
 import com.google.cloud.tools.jib.api.InvalidImageReferenceException;
 import com.google.cloud.tools.jib.api.JavaContainerBuilder;
@@ -215,10 +216,22 @@ public class PluginConfigurationProcessor {
           JibPluginExtensionException, ExtraDirectoryNotFoundException {
     ImageReference targetImageReference =
         getGeneratedTargetDockerTag(rawConfiguration, projectProperties, helpfulSuggestions);
-    TarImage targetImage =
-        TarImage.at(rawConfiguration.getTarOutputPath()).named(targetImageReference);
-
-    Containerizer containerizer = Containerizer.to(targetImage);
+    Containerizer containerizer;
+    boolean encrypted = false;
+    if (!"".equals(rawConfiguration.getKeyPath().toString())) {
+      EncTarImage targetImage =
+          EncTarImage.at(
+                  rawConfiguration.getTarOutputPath(),
+                  rawConfiguration.getKeyPath(),
+                  rawConfiguration.getWrapType())
+              .named(targetImageReference);
+      containerizer = Containerizer.to(targetImage);
+      encrypted = true;
+    } else {
+      TarImage targetImage =
+          TarImage.at(rawConfiguration.getTarOutputPath()).named(targetImageReference);
+      containerizer = Containerizer.to(targetImage);
+    }
     Multimaps.asMap(globalConfig.getRegistryMirrors()).forEach(containerizer::addRegistryMirrors);
 
     JibContainerBuilder jibContainerBuilder =
@@ -233,7 +246,8 @@ public class PluginConfigurationProcessor {
             containerizer,
             projectProperties::log,
             helpfulSuggestions,
-            rawConfiguration.getTarOutputPath())
+            rawConfiguration.getTarOutputPath(),
+            encrypted)
         .writeImageDigest(rawConfiguration.getDigestOutputPath())
         .writeImageId(rawConfiguration.getImageIdOutputPath())
         .writeImageJson(rawConfiguration.getImageJsonOutputPath());

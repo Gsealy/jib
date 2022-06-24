@@ -31,6 +31,7 @@ public class OutputPathsParameters {
 
   private Path digest;
   private Path tar;
+  private Path key;
   private Path imageId;
   private Path imageJson;
 
@@ -41,6 +42,7 @@ public class OutputPathsParameters {
     imageId = project.getBuildDir().toPath().resolve("jib-image.id");
     imageJson = project.getBuildDir().toPath().resolve("jib-image.json");
     tar = project.getBuildDir().toPath().resolve("jib-image.tar");
+    key = project.getBuildDir().toPath().resolve("jib-image.key");
   }
 
   @Input
@@ -88,6 +90,11 @@ public class OutputPathsParameters {
   @Input
   public String getTar() {
     return getRelativeToProjectRoot(tar, PropertyNames.OUTPUT_PATHS_TAR).toString();
+  }
+
+  @Input
+  public String getKey() {
+    return getRelativeToProjectRoot(key, PropertyNames.OUTPUT_PATHS_KEY).toString();
   }
 
   @Internal

@@ -125,6 +125,10 @@ public interface RawConfiguration {
 
   String getContainerizingMode();
 
+  Path getKeyPath();
+
+  String getWrapType();
+
   Path getTarOutputPath();
 
   Path getDigestOutputPath();

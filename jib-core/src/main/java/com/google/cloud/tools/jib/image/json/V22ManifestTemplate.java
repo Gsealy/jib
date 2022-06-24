@@ -20,6 +20,7 @@ import com.google.cloud.tools.jib.api.DescriptorDigest;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import javax.annotation.Nullable;
 
 /**
@@ -106,7 +107,8 @@ public class V22ManifestTemplate implements BuildableManifestTemplate {
   }
 
   @Override
-  public void addLayer(long size, DescriptorDigest digest) {
+  public void addLayer(
+      long size, DescriptorDigest digest, @Nullable Map<String, String> annotations) {
     layers.add(new ContentDescriptorTemplate(LAYER_MEDIA_TYPE, size, digest));
   }
 }

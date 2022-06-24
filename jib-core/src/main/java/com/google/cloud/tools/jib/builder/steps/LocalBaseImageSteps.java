@@ -162,7 +162,7 @@ public class LocalBaseImageSteps {
       V22ManifestTemplate v22Manifest = new V22ManifestTemplate();
       for (PreparedLayer layer : layers) {
         BlobDescriptor descriptor = layer.getBlobDescriptor();
-        v22Manifest.addLayer(descriptor.getSize(), descriptor.getDigest());
+        v22Manifest.addLayer(descriptor.getSize(), descriptor.getDigest(), null);
       }
 
       BlobDescriptor configDescriptor = Digests.computeDigest(configurationTemplate);

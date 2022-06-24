@@ -135,6 +135,7 @@ public interface BuildableManifestTemplate extends ManifestTemplate {
    *
    * @param size the size of the layer.
    * @param digest the layer descriptor digest.
+   * @param annotations the layer annotations
    */
-  void addLayer(long size, DescriptorDigest digest);
+  void addLayer(long size, DescriptorDigest digest, @Nullable Map<String, String> annotations);
 }

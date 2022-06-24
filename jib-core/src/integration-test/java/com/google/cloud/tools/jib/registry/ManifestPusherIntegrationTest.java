@@ -76,7 +76,7 @@ public class ManifestPusherIntegrationTest {
 
     // Creates a valid image manifest.
     V22ManifestTemplate expectedManifestTemplate = new V22ManifestTemplate();
-    expectedManifestTemplate.addLayer(9, testLayerBlobDigest);
+    expectedManifestTemplate.addLayer(9, testLayerBlobDigest, null);
     expectedManifestTemplate.setContainerConfiguration(5, testContainerConfigurationBlobDigest);
 
     // Pushes the BLOBs.
