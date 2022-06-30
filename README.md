@@ -9,6 +9,9 @@ Jib builds encrypted [OCI](https://github.com/opencontainers/image-spec) images 
 
 ## Support
 
+> **Note**
+> just support `maven-plugin` with tarball
+
 * maven-plugin version: 3.2.1
 * build encrypted image Tarball(just maven plugin)
 
